@@ -18,12 +18,18 @@ class VariablenamePass {
 
 	private static $__privateStatic = true;
 
+/**
+ * @return void
+ */
 	public function setVariables() {
 		$this->passingPublic = 'changed';
 		$this->_underscored = 'has value now';
 		$this->__doubleUnderscore = 'not recommended';
 	}
 
+/**
+ * @return void
+ */
 	public static function setStatics() {
 		self::$publicStatic = true;
 		self::$_protectedStatic = true;

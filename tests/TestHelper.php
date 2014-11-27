@@ -1,6 +1,11 @@
 <?php
+$vendors = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'squizlabs' . DIRECTORY_SEPARATOR . 'php_codesniffer';
+
+if (strpos(get_include_path(), $vendors) === false) {
+	set_include_path(get_include_path() . PATH_SEPARATOR . $vendors);
+}
 if (!class_exists('PHP_CodeSniffer_CLI')) {
-	require_once 'PHP/CodeSniffer/CLI.php';
+	require_once 'CodeSniffer/CLI.php';
 }
 
 class TestHelper {

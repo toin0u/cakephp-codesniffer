@@ -14,23 +14,15 @@
  * @since         CakePHP CodeSniffer 0.1.10
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false) {
-	$error = 'Class PHP_CodeSniffer_Standards_AbstractScopeSniff not found';
-	throw new PHP_CodeSniffer_Exception($error);
+if (class_exists('PEAR_Sniffs_Commenting_FunctionCommentSniff', true) === false) {
+    throw new PHP_CodeSniffer_Exception('Class PEAR_Sniffs_Commenting_FunctionCommentSniff not found');
 }
 
 /**
  * Ensures the throws in the code are declared in the PHPDoc
  *
  */
-class CakePHP_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff {
-
-/**
- * Constructs a CakePHP_Sniffs_Commenting_FunctionCommentThrowTagSniff.
- */
-	public function __construct() {
-		parent::__construct(array(T_FUNCTION), array(T_THROW));
-	}
+class CakePHP_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PEAR_Sniffs_Commenting_FunctionCommentSniff {
 
 /**
  * Processes this test, when one of its tokens is encountered.
@@ -39,7 +31,7 @@ class CakePHP_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSni
  * @param integer $stackPtr The position of the current token in the stack passed in $tokens.
  * @return void
  */
-	protected function processTokenWithinScope(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $currScope) {
+	protected function _processTokenWithinScope(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $currScope) {
 		// Is this the first throw token within the current function scope?
 		// If so, we have to validate other throw tokens within the same scope.
 		$previousThrow = $phpcsFile->findPrevious(T_THROW, ($stackPtr - 1), $currScope);
@@ -92,8 +84,7 @@ class CakePHP_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSni
 		$uses = $this->_readUses($phpcsFile);
 		$throwTokens = $this->_adjustThrows($throwTokens, $namespace, $uses);
 
-		// $throws = $this->commentParser->getThrows();
-		$throws = array();
+		$throws = $this->_getThrows($phpcsFile, $commentStart);
 		if (empty($throws) === true) {
 			$error = 'Missing @throws tag in function comment';
 			$phpcsFile->addError($error, $commentEnd, 'Missing');
@@ -106,9 +97,9 @@ class CakePHP_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSni
 			$throwTags = array();
 			$lineNumber = array();
 			foreach ($throws as $throw) {
-				$value = ltrim($throw->getValue(), '\\');
+				$value = ltrim($throw['comment'], '\\');
 				$throwTags[] = $value;
-				$lineNumber[$value] = $throw->getLine();
+				$lineNumber[$value] = $throw['line'];
 			}
 
 			$throwTags = array_unique($throwTags);
@@ -140,6 +131,26 @@ class CakePHP_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSni
 				}
 			}
 		}
+	}
+
+	// Lets not use it for now, use the already existing sniff...
+	protected function _getThrows(PHP_CodeSniffer_File $phpcsFile, $commentStart) {
+		$tokens = $phpcsFile->getTokens();
+		$throws = array();
+		print_r($tokens[$commentStart + 1]);
+    foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
+        if ($tokens[$tag]['content'] !== '@throws') {
+            continue;
+        }
+        print_r($tokens[$tag]);
+        die();
+        $throws[] = array(
+					'line' => $pos,
+					'comment' => ''
+				);
+		}
+
+		return $throws;
 	}
 
 /**

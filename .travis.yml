@@ -6,12 +6,12 @@ php:
   - 5.5
 
 before_script:
-  - mv ../cakephp-codesniffer ../cakephp_codesniffer && cd ../cakephp_codesniffer
+  - mv ../cakephp-codesniffer ../CakePHP && cd ../CakePHP
   - composer selfupdate
   - composer install
 
 script:
-  - cd CakePHP && phpunit
+  - phpunit
 
 notifications:
   email: false
